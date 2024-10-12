@@ -2,24 +2,24 @@
 CXX = g++
 
 # 编译选项
-CXXFLAGS = -std=c++17 -Wall -I/opt/ros/humble/include/rclcpp 
+CXXFLAGS = -std=c++17 -Wall -I./libs/include
 
 # 链接选项
-LDFLAGS = -lspdlog
+LDFLAGS = -L./libs/lib -lrclcpp -lspdlog
 
 # 目标文件
 TARGET = log_rotation_test
 
 # 源代码文件
-SRCS = log_rotation_test.cpp
+SRCS = src/log_rotation_test.cpp
 
 # 生成的对象文件
 OBJS = $(SRCS:.cpp=.o)
 
-# 规则：编译目标
+# 编译目标
 all: $(TARGET)
 
-# 生成可执行文件
+# 链接生成可执行文件
 $(TARGET): $(OBJS)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
@@ -27,6 +27,6 @@ $(TARGET): $(OBJS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# 清理
+# 清理生成的文件
 clean:
 	rm -f $(OBJS) $(TARGET)
