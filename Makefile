@@ -2,7 +2,7 @@
 CXX = g++
 
 # 编译选项
-CXXFLAGS = -std=c++17 -Wall -I/usr/include/spdlog
+CXXFLAGS = -std=c++17 -Wall -I/usr/include/spdlog/rclcpp
 
 # 链接选项
 LDFLAGS = -lspdlog
