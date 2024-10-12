@@ -10,7 +10,8 @@ void initialize_logging() {
     int ret = rcl_logging_external_initialize(nullptr, rcl_get_default_allocator());
     if (ret != RCL_RET_OK) {
         std::cerr << "Failed to initialize logging system." << std::endl;
-        exit(1);
+        exit(1);、
+        
     }
 }
 
