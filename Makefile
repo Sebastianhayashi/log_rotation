@@ -2,7 +2,7 @@
 CXX = g++
 
 # 编译选项
-CXXFLAGS = -std=c++17 -Wall -I/usr/include/spdlog/rclcpp
+CXXFLAGS = -std=c++17 -Wall -I/opt/ros/humble/include/rclcpp
 
 # 链接选项
 LDFLAGS = -lspdlog
