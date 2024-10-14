@@ -16,7 +16,7 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-# 在 CMake 中包含 NumPy 的头文件路径
+# 添加 NumPy 的 include 目录
 include_directories(${NUMPY_INCLUDE_DIR})
 
 # 添加可执行文件
