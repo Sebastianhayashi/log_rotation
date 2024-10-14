@@ -1,18 +1,17 @@
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall $(shell pkg-config --cflags-only-I rclcpp)
-LDFLAGS = $(shell pkg-config --libs rclcpp rcl_logging_spdlog spdlog)
+cmake_minimum_required(VERSION 3.5)
+project(log_rotation_test)
 
-TARGET = log_rotation_test
-SRCS = src/log_rotation_test.cpp
-OBJS = $(SRCS:.cpp=.o)
+# 寻找依赖项
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(spdlog REQUIRED)
 
-all: $(TARGET)
+add_executable(log_rotation_node src/log_rotation_node.cpp)
 
-$(TARGET): $(OBJS)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+ament_target_dependencies(log_rotation_node rclcpp spdlog)
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+install(TARGETS
+  log_rotation_node
+  DESTINATION lib/${PROJECT_NAME})
 
-clean:
-	rm -f $(OBJS) $(TARGET)
+ament_package()
