@@ -1,45 +1,24 @@
 cmake_minimum_required(VERSION 3.5)
-project(log_rotation_test)
+project(my_ros2_logging_project)
 
-# 寻找 ROS2 相关依赖项
+# 查找ROS2包依赖
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(spdlog REQUIRED)
-find_package(fmt REQUIRED)  # 确保找到 fmt 库
+find_package(rcutils REQUIRED)
 
-# 确保使用虚拟环境中的 Python 和 NumPy 路径
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+# 添加可执行文件
+add_executable(log_test_node src/log_test_node.cpp)
 
-# 获取 NumPy 的 include 路径并存入变量
-execute_process(
-  COMMAND ${Python3_EXECUTABLE} -c "import numpy; print(numpy.get_include())"
-  OUTPUT_VARIABLE NUMPY_INCLUDE_DIR
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+# 链接依赖库
+ament_target_dependencies(log_test_node rclcpp)
 
-# 打印 NumPy 的 include 路径以进行验证
-message(STATUS "Using NumPy include path: ${NUMPY_INCLUDE_DIR}")
-
-# 添加 NumPy 的 include 目录
-include_directories(${NUMPY_INCLUDE_DIR})
-
-# 添加可执行文件 log_rotation_node
-add_executable(log_rotation_node src/log_rotation_node.cpp)
-
-# 链接依赖项
-ament_target_dependencies(log_rotation_node rclcpp spdlog fmt)  # 确保链接 fmt 库
-
-# 如果 fmt::fmt 的方式无法解决问题，您可以手动链接库路径：
-# target_link_libraries(log_rotation_node /usr/lib/x86_64-linux-gnu/libfmt.so)
-
-# 安装可执行文件到指定目录
+# 安装节点可执行文件
 install(TARGETS
-  log_rotation_node
+  log_test_node
   DESTINATION lib/${PROJECT_NAME})
 
-# 调用 ament_package 生成 package 信息
-ament_package()
+# 安装配置文件
+install(DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}/)
 
-# 设置 C++ 标准
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ament_package()

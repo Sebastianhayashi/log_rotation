@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>log_rotation_test</name>
+  <name>my_ros2_logging_project</name>
   <version>0.1.0</version>
-  <description>Test for ROS 2 logging with rotation</description>
+  <description>ROS2 project for logging system testing with log rotation</description>
 
-  <maintainer email="your-email@example.com">Your Name</maintainer>
+  <maintainer email="you@example.com">Your Name</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
-  <depend>spdlog</depend>
+  <depend>rcutils</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
