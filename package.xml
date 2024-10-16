@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>rcl_logging_example</name>
+  <name>my_ros2_logging_project</name>  <!-- 修改为 CMake 中的项目名称 -->
   <version>0.1.0</version>
   <description>Example of ROS2 logging with log rotation</description>
   <maintainer email="you@example.com">Your Name</maintainer>
