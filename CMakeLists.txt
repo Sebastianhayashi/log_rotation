@@ -21,4 +21,9 @@ install(TARGETS
 install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME}/)
 
+  # 安装 launch 文件
+install(DIRECTORY launch
+DESTINATION share/${PROJECT_NAME}/
+)
+
 ament_package()
