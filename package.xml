@@ -1,16 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>my_ros2_logging_project</name>
+  <name>rcl_logging_example</name>
   <version>0.1.0</version>
-  <description>ROS2 project for logging system testing with log rotation</description>
-
+  <description>Example of ROS2 logging with log rotation</description>
   <maintainer email="you@example.com">Your Name</maintainer>
-  <license>Apache-2.0</license>
-
+  <license>Apache 2.0</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
-  <depend>rcutils</depend>
-
+  <depend>rcl_logging_log4cxx</depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>
