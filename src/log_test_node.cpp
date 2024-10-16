@@ -24,10 +24,14 @@ public:
             log_file_path, 10485760, 5);  // 10MB, 保留5个文件
         spdlog::logger rotating_logger("rotating_logger", rotating_sink);
 
-        // 输出不同级别的日志
-        rotating_logger.info("This is an INFO log message from log_test_node.");
-        rotating_logger.warn("This is a WARNING log message from log_test_node.");
-        rotating_logger.error("This is an ERROR log message from log_test_node.");
+        // 模拟大量日志输出
+        for (int i = 0; i < 1000000; ++i) {
+            rotating_logger.info("INFO log message number: {}", i);
+            rotating_logger.warn("WARNING log message number: {}", i);
+            rotating_logger.error("ERROR log message number: {}", i);
+        }
+
+        RCLCPP_INFO(this->get_logger(), "Finished generating logs.");
     }
 };
 
