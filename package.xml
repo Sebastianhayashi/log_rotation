@@ -1,13 +1,17 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>my_ros2_logging_project</name>  <!-- 修改为 CMake 中的项目名称 -->
+  <name>my_ros2_logging_project</name>
   <version>0.1.0</version>
-  <description>Example of ROS2 logging with log rotation</description>
+  <description>ROS2 logging project with support for rcl_logging_spdlog and log rotation.</description>
   <maintainer email="you@example.com">Your Name</maintainer>
-  <license>Apache 2.0</license>
+  <license>Apache-2.0</license>
+
+  <!-- 依赖 -->
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>rclcpp</depend>
-  <depend>rcl_logging_log4cxx</depend>
+  <depend>rcl_logging_spdlog</depend>
+  <depend>rcutils</depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

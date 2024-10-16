@@ -1,30 +1,32 @@
 cmake_minimum_required(VERSION 3.5)
 project(my_ros2_logging_project)
 
-# 查找ROS2包依赖
+# 查找依赖
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rcl_logging_spdlog REQUIRED)
+find_package(rcutils REQUIRED)
 
 # 添加可执行文件
 add_executable(log_test_node src/log_test_node.cpp)
 
 # 链接依赖库
-ament_target_dependencies(log_test_node rclcpp)
+ament_target_dependencies(log_test_node
+  rclcpp
+  rcl_logging_spdlog
+  rcutils
+)
 
-# 安装节点可执行文件
-install(TARGETS
-  log_test_node
+# 安装可执行文件
+install(TARGETS log_test_node
   DESTINATION lib/${PROJECT_NAME})
 
-# **安装配置文件** (你需要将这段放在 ament_package() 之前)
+# 安装配置文件
 install(DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}/
-)
+  DESTINATION share/${PROJECT_NAME}/)
 
-# 安装 launch 文件
+# 安装launch文件
 install(DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}/
-)
+  DESTINATION share/${PROJECT_NAME}/)
 
-# 生成包信息
 ament_package()
