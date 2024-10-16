@@ -16,13 +16,17 @@ ament_target_dependencies(log_test_node
   rclcpp
   rcl_logging_spdlog
   rcutils
-  fmt  # 添加 fmt 库的依赖
+  fmt  # 添加 fmt 库依赖
 )
 
-# 手动链接 pthread 库
+# 手动链接 pthread 库和 fmt 库
 target_link_libraries(log_test_node
-  pthread  # 显式链接 pthread
+  fmt  # 手动添加 fmt 库
+  pthread  # 显式添加 pthread 库
 )
+
+# 添加链接器标志以解决 DSO 错误
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--copy-dt-needed-entries")
 
 # 安装可执行文件
 install(TARGETS log_test_node
