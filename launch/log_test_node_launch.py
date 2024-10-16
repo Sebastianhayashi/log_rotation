@@ -10,7 +10,6 @@ def generate_launch_description():
         'config', 'log4cxx.properties')
 
     return LaunchDescription([
-        # 设置环境变量来指定log4cxx配置文件
         SetEnvironmentVariable('LOG4CXX_CONFIGURATION', config_dir),
 
         Node(
