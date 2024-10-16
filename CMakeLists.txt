@@ -19,6 +19,11 @@ ament_target_dependencies(log_test_node
   fmt  # 添加 fmt 库的依赖
 )
 
+# 手动链接 pthread 库
+target_link_libraries(log_test_node
+  pthread  # 显式链接 pthread
+)
+
 # 安装可执行文件
 install(TARGETS log_test_node
   DESTINATION lib/${PROJECT_NAME})
