@@ -1,7 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/rotating_file_sink.h>  // 基于大小的日志轮转
-#include <rcutils/filesystem.h>  // 用于获取用户目录
+#include <cstdlib>  // std::getenv
 #include <memory>
 
 class LogTestNode : public rclcpp::Node
@@ -10,7 +10,7 @@ public:
     LogTestNode() : Node("log_test_node")
     {
         // 获取当前用户的 home 目录
-        const char * home_dir = rcutils_get_home_dir();
+        const char * home_dir = std::getenv("HOME");
         if (!home_dir) {
             RCLCPP_ERROR(this->get_logger(), "Failed to get home directory");
             return;
