@@ -5,6 +5,7 @@ project(log_rotation_test)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(fmt REQUIRED)  # 确保找到 fmt 库
 
 # 确保使用虚拟环境中的 Python 和 NumPy 路径
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
@@ -26,7 +27,10 @@ include_directories(${NUMPY_INCLUDE_DIR})
 add_executable(log_rotation_node src/log_rotation_node.cpp)
 
 # 链接依赖项
-ament_target_dependencies(log_rotation_node rclcpp spdlog)
+ament_target_dependencies(log_rotation_node rclcpp spdlog fmt)  # 确保链接 fmt 库
+
+# 如果 fmt::fmt 的方式无法解决问题，您可以手动链接库路径：
+# target_link_libraries(log_rotation_node /usr/lib/x86_64-linux-gnu/libfmt.so)
 
 # 安装可执行文件到指定目录
 install(TARGETS
@@ -35,3 +39,7 @@ install(TARGETS
 
 # 调用 ament_package 生成 package 信息
 ament_package()
+
+# 设置 C++ 标准
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
