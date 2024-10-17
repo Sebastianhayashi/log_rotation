@@ -21,7 +21,7 @@ public:
 
         // 创建基于大小的日志轮转器
         auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            log_file_path, 1048576, 5);  // 1MB, 保留5个文件
+            log_file_path, 262144, 5);  // 256KB, 保留5个文件
         spdlog::logger rotating_logger("rotating_logger", rotating_sink);
 
         // 模拟大量日志输出
