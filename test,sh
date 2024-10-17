@@ -3,7 +3,7 @@
 # 定义日志目录
 LOG_DIR="$HOME/.ros/log"
 LOG_FILE="my_node.log"
-BACKUP_LOG_PATTERN="my_node.log.*"
+BACKUP_LOG_PATTERN="my_node.*.log"
 
 # 清理之前的日志文件
 echo "Cleaning up old log files..."
