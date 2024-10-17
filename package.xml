@@ -3,7 +3,7 @@
   <name>my_ros2_logging_project</name>
   <version>0.1.0</version>
   <description>ROS2 logging project with support for rcl_logging_spdlog and log rotation.</description>
-  <maintainer email="you@example.com">Your Name</maintainer>
+  <maintainer email="microseyuyu@gmail.com">Sebastian</maintainer>
   <license>Apache-2.0</license>
 
   <!-- 依赖 -->
