@@ -21,16 +21,16 @@ public:
 
         // 创建基于大小的日志轮转器
         auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            log_file_path, 10485760, 5);  // 10MB, 保留5个文件
+            log_file_path, 1048576, 5);  // 1MB, 保留5个文件
         spdlog::logger rotating_logger("rotating_logger", rotating_sink);
 
         // 模拟大量日志输出
-        for (int i = 0; i < 1000000; ++i) {
+        for (int i = 0; i < 10000000; ++i) { // 增加循环次数
             rotating_logger.info("INFO log message number: {}", i);
             rotating_logger.warn("WARNING log message number: {}", i);
             rotating_logger.error("ERROR log message number: {}", i);
         }
-
+        
         RCLCPP_INFO(this->get_logger(), "Finished generating logs.");
     }
 };
