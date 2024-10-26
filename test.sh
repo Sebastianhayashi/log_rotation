@@ -1,14 +1,26 @@
 #!/bin/bash
 
-# 定义日志目录
-LOG_DIR="$HOME/.ros/log"
-LOG_FILE="my_node.log"
-BACKUP_LOG_PATTERN="my_node.*.log"
+# 询问用户存放日志的位置
+read -p "Enter the directory where you want to store logs (default: $HOME/.ros/log): " input_log_dir
+LOG_DIR="${input_log_dir:-$HOME/.ros/log}"
+
+# 询问用户日志文件的命名
+read -p "Enter the log file name (default: my_node.log): " input_log_file
+LOG_FILE="${input_log_file:-my_node.log}"
+BACKUP_LOG_PATTERN="${LOG_FILE%.*}.*.log"
+
+# 创建日志目录（如果不存在）
+mkdir -p "$LOG_DIR"
 
 # 清理之前的日志文件
-echo "Cleaning up old log files..."
-rm -f $LOG_DIR/$LOG_FILE
-rm -f $LOG_DIR/$BACKUP_LOG_PATTERN
+echo "Do you want to delete existing log files? (y/n)"
+read -r delete_logs
+if [[ "$delete_logs" == "y" ]]; then
+    echo "Cleaning up old log files..."
+    rm -f "$LOG_DIR/$LOG_FILE"
+    rm -f "$LOG_DIR/$BACKUP_LOG_PATTERN"
+    echo "Old log files deleted."
+fi
 
 # 启动 ROS2 节点，生成日志
 echo "Starting ROS2 node to generate logs..."
@@ -20,7 +32,7 @@ sleep 10
 
 # 检查日志文件是否生成
 if [ -f "$LOG_DIR/$LOG_FILE" ]; then
-    echo "Log file $LOG_FILE has been created successfully."
+    echo "Log file $LOG_FILE has been created successfully in $LOG_DIR."
 else
     echo "Error: Log file $LOG_FILE was not created."
     exit 1
@@ -56,6 +68,18 @@ if [ "$BACKUP_LOG_COUNT" -le 5 ]; then
 else
     echo "Error: More than 5 backup log files found."
     exit 1
+fi
+
+# 提供转存日志文件的功能
+echo "Do you want to archive older log files? (y/n)"
+read -r archive_logs
+if [[ "$archive_logs" == "y" ]]; then
+    ARCHIVE_DIR="$LOG_DIR/archive"
+    mkdir -p "$ARCHIVE_DIR"
+    ARCHIVE_FILE="$ARCHIVE_DIR/log_backup_$(date +%Y-%m-%d_%H-%M-%S).tar.gz"
+    echo "Archiving backup logs to $ARCHIVE_FILE..."
+    tar -czf "$ARCHIVE_FILE" -C "$LOG_DIR" $BACKUP_LOG_PATTERN
+    echo "Old logs have been archived."
 fi
 
 # 停止 ROS2 节点
