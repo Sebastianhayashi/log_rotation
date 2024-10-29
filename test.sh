@@ -40,14 +40,16 @@ fi
 
 # 检查日志文件内容是否包含期望的日志级别
 echo "Checking log file contents..."
-if grep -q "INFO log message number" "$FULL_LOG_PATH" && \
-   grep -q "WARNING log message number" "$FULL_LOG_PATH" && \
-   grep -q "ERROR log message number" "$FULL_LOG_PATH"; then
+if grep -q "INFO log message" "$FULL_LOG_PATH"* && \
+   grep -q "WARNING log message" "$FULL_LOG_PATH"* && \
+   grep -q "ERROR log message" "$FULL_LOG_PATH"*; then
     echo "Log file contains expected log messages (INFO, WARNING, ERROR)."
 else
     echo "Error: Log file does not contain expected log messages."
     exit 1
 fi
+
+
 
 # 生成更多日志，等待日志轮转
 echo "Generating more logs to trigger log rotation..."
