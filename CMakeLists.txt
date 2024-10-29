@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
-project(my_ros2_logging_project)
+project(log_rotation)
+
+# 设置 C++ 标准
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 查找依赖
 find_package(ament_cmake REQUIRED)
@@ -19,11 +23,13 @@ ament_target_dependencies(log_test_node
   fmt  # 添加 fmt 库依赖
 )
 
-# 手动链接 pthread 库和 fmt 库
-target_link_libraries(log_test_node
-  fmt  # 手动添加 fmt 库
-  pthread  # 显式添加 pthread 库
-)
+# 手动链接 pthread 库（仅在 Linux 平台）
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  target_link_libraries(log_test_node pthread)
+endif()
+
+# 添加 fmt 库
+target_link_libraries(log_test_node fmt)
 
 # 添加链接器标志以解决 DSO 错误
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--copy-dt-needed-entries")
@@ -36,7 +42,7 @@ install(TARGETS log_test_node
 install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME}/)
 
-# 安装launch文件
+# 安装 launch 文件
 install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}/)
 

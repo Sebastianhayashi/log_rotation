@@ -5,8 +5,8 @@ read -p "Enter the directory where you want to store logs (default: $HOME/.ros/l
 LOG_DIR="${input_log_dir:-$HOME/.ros/log}"
 
 # 询问用户日志文件的命名
-read -p "Enter the log file name (default: my_node.log): " input_log_file
-LOG_FILE="${input_log_file:-my_node.log}"
+read -p "Enter the log file name (default: log_rotation_node.log): " input_log_file
+LOG_FILE="${input_log_file:-log_rotation_node.log}"
 FULL_LOG_PATH="$LOG_DIR/$LOG_FILE"  # 组合完整路径
 
 # 创建日志目录（如果不存在）
@@ -25,7 +25,7 @@ fi
 # 启动 ROS2 节点，生成日志，并将日志路径传递给程序
 echo "Starting ROS2 node to generate logs..."
 source install/setup.bash
-ros2 run my_ros2_logging_project log_test_node "$FULL_LOG_PATH" &
+ros2 run log_rotation log_test_node "$FULL_LOG_PATH" &
 
 # 等待日志生成
 sleep 20
@@ -49,15 +49,13 @@ else
     exit 1
 fi
 
-
-
 # 生成更多日志，等待日志轮转
 echo "Generating more logs to trigger log rotation..."
 sleep 10  # 等待足够的日志输出时间
 
 # 检查日志轮转是否发生
 BACKUP_LOG_PATTERN="${LOG_FILE%.*}.*.log"
-BACKUP_LOG_COUNT=$(ls $LOG_DIR/$BACKUP_LOG_PATTERN 2> /dev/null | wc -l)
+BACKUP_LOG_COUNT=$(ls "$LOG_DIR"/"$BACKUP_LOG_PATTERN" 2> /dev/null | wc -l)
 if [ "$BACKUP_LOG_COUNT" -gt 0 ]; then
     echo "Log rotation has occurred. Backup log files count: $BACKUP_LOG_COUNT"
 else
@@ -87,6 +85,6 @@ fi
 
 # 停止 ROS2 节点
 echo "Stopping ROS2 node..."
-pkill -f "ros2 run my_ros2_logging_project log_test_node"
+pkill -f "ros2 run log_rotation log_test_node"
 
 echo "Test completed successfully."

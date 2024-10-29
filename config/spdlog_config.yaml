@@ -1,10 +1,27 @@
-# 这是一个示例的spdlog配置文件
-sp_logger:
-  name: rotating_logger
-  level: info
-  sinks:
-    - type: rotating_file_sink
-      filename: "/home/user/.ros/log/my_node.log"
-      max_size: 10485760  # 10MB
-      max_files: 5
-  pattern: "[%Y-%m-%d %H:%M:%S.%e] [%l] %v"
+global:
+  level: info         # 全局日志级别，默认为 info，可以改为 debug, warn, error 等
+  flush_on: error     # 定义何时刷新日志，可以是 trace, debug, info, warn, error, critical
+
+# 日志记录器配置
+sinks:
+  - name: rotating_logger
+    type: rotating_file_sink
+    filename: "/path/to/log/directory/my_node.log"  # 替换为实际日志路径
+    max_size: 10485760  # 10MB（以字节为单位）
+    max_files: 5        # 最大轮转文件数
+
+  # 启用异步日志（可选）
+  - name: async_logger
+    type: async
+    queue_size: 8192   # 队列大小，影响性能和日志丢失
+    threads: 1         # 异步日志使用的线程数
+
+loggers:
+  - name: rotating_logger
+    level: info          # 设置该记录器的日志级别
+    sinks: ["rotating_logger"]
+    async: true          # 启用异步模式
+  - name: async_logger
+    level: debug         # 可以根据需要设置异步记录器的日志级别
+    sinks: ["async_logger"]
+    async: true
