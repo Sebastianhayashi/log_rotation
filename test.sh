@@ -28,7 +28,7 @@ source install/setup.bash
 ros2 run my_ros2_logging_project log_test_node "$FULL_LOG_PATH" &
 
 # 等待日志生成
-sleep 10
+sleep 20
 
 # 检查日志文件是否生成
 if [ -f "$FULL_LOG_PATH" ]; then
