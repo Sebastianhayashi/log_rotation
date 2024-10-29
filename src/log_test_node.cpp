@@ -4,22 +4,25 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <chrono>
+#include <thread>
 
 class LogTestNode : public rclcpp::Node
 {
 public:
     LogTestNode(const std::string & log_file_path) : Node("log_test_node")
     {
-        // 创建基于大小的日志轮转器
+        // 创建基于大小的日志轮转器，临时设置较小的大小以便测试轮转功能
         auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-            log_file_path, 262144, 5);  // 256KB, 保留5个文件
+            log_file_path, 10240, 5);  // 10KB, 保留5个文件
         spdlog::logger rotating_logger("rotating_logger", rotating_sink);
 
-        // 模拟大量日志输出
+        // 模拟大量日志输出，包含延时以确保文件大小累积
         for (int i = 0; i < 10000000; ++i) {
             rotating_logger.info("INFO log message number: {}", i);
             rotating_logger.warn("WARNING log message number: {}", i);
             rotating_logger.error("ERROR log message number: {}", i);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));  // 增加延时以累积文件大小
         }
         
         RCLCPP_INFO(this->get_logger(), "Finished generating logs.");
