@@ -30,6 +30,10 @@ if [[ "$delete_logs" == "y" ]]; then
     echo "Old log files deleted."
 fi
 
+echo "LOG_DIR is set to: $LOG_DIR"
+echo "BACKUP_LOG_PATTERN is set to: $BACKUP_LOG_PATTERN"
+
+
 # 启动 ROS2 节点，生成日志，并将日志路径传递给程序
 echo "Starting ROS2 node to generate logs..."
 source install/setup.bash
@@ -63,7 +67,9 @@ sleep 20  # 延长等待时间
 
 # 检查日志轮转是否发生
 BACKUP_LOG_PATTERN="${LOG_FILE%.*}.*.log"
-BACKUP_LOG_COUNT=$(ls $LOG_DIR/$BACKUP_LOG_PATTERN 2> /dev/null | grep -c "${LOG_FILE%.*}\.[0-9]")
+echo "Checking for backup logs matching pattern: $BACKUP_LOG_PATTERN in directory: $LOG_DIR"
+
+BACKUP_LOG_COUNT=$(find "$LOG_DIR" -type f -name "$BACKUP_LOG_PATTERN" | wc -l)
 
 if [ "$BACKUP_LOG_COUNT" -gt 0 ]; then
     echo "Log rotation has occurred. Backup log files count: $BACKUP_LOG_COUNT"
