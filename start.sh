@@ -63,7 +63,7 @@ sleep 20  # 延长等待时间
 
 # 检查日志轮转是否发生
 BACKUP_LOG_PATTERN="${LOG_FILE%.*}.*.log"
-BACKUP_LOG_COUNT=$(ls "$LOG_DIR"/"$BACKUP_LOG_PATTERN" 2> /dev/null | grep -c "${LOG_FILE%.*}\.[0-9]")
+BACKUP_LOG_COUNT=$(ls $LOG_DIR/$BACKUP_LOG_PATTERN 2> /dev/null | grep -c "${LOG_FILE%.*}\.[0-9]")
 
 if [ "$BACKUP_LOG_COUNT" -gt 0 ]; then
     echo "Log rotation has occurred. Backup log files count: $BACKUP_LOG_COUNT"
