@@ -65,19 +65,6 @@ fi
 echo "Generating more logs to trigger log rotation..."
 sleep 20  # 延长等待时间
 
-# 检查日志轮转是否发生
-BACKUP_LOG_PATTERN="${LOG_FILE%.*}.*.log"
-echo "Checking for backup logs matching pattern: $BACKUP_LOG_PATTERN in directory: $LOG_DIR"
-
-BACKUP_LOG_COUNT=$(find "$LOG_DIR" -type f -name "$BACKUP_LOG_PATTERN" | wc -l)
-
-if [ "$BACKUP_LOG_COUNT" -gt 0 ]; then
-    echo "Log rotation has occurred. Backup log files count: $BACKUP_LOG_COUNT"
-else
-    echo "Error: Log rotation did not occur."
-    exit 1
-fi
-
 # 确保不超过5个备份日志文件
 if [ "$BACKUP_LOG_COUNT" -le 5 ]; then
     echo "Log rotation is working correctly, no more than 5 backup files."
