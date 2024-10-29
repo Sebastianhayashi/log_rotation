@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# 检查 install/setup.bash 是否存在
+if [ ! -f "install/setup.bash" ]; then
+    echo "Error: install/setup.bash not found. Please run 'colcon build' first."
+    exit 1
+fi
+
+source install/setup.bash
+
 # 询问用户存放日志的位置
 read -p "Enter the directory where you want to store logs (default: $HOME/.ros/log): " input_log_dir
 LOG_DIR="${input_log_dir:-$HOME/.ros/log}"
