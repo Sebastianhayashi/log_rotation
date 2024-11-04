@@ -31,8 +31,7 @@ if [[ "$delete_logs" == "y" ]]; then
 fi
 
 echo "LOG_DIR is set to: $LOG_DIR"
-echo "BACKUP_LOG_PATTERN is set to: $BACKUP_LOG_PATTERN"
-
+echo "Log file pattern is set to: ${LOG_FILE}.*.log"
 
 # 启动 ROS2 节点，生成日志，并将日志路径传递给程序
 echo "Starting ROS2 node to generate logs..."
@@ -65,6 +64,9 @@ fi
 echo "Generating more logs to trigger log rotation..."
 sleep 20  # 延长等待时间
 
+# 检查备份日志文件数量
+BACKUP_LOG_COUNT=$(ls "$LOG_DIR"/${LOG_FILE}.*.log 2>/dev/null | wc -l)
+
 # 确保不超过5个备份日志文件
 if [ "$BACKUP_LOG_COUNT" -le 5 ]; then
     echo "Log rotation is working correctly, no more than 5 backup files."
@@ -81,8 +83,11 @@ if [[ "$archive_logs" == "y" ]]; then
     mkdir -p "$ARCHIVE_DIR"
     ARCHIVE_FILE="$ARCHIVE_DIR/log_backup_$(date +%Y-%m-%d_%H-%M-%S).tar.gz"
     echo "Archiving backup logs to $ARCHIVE_FILE..."
-    tar -czf "$ARCHIVE_FILE" -C "$LOG_DIR" $BACKUP_LOG_PATTERN
+    tar -czf "$ARCHIVE_FILE" -C "$LOG_DIR" ${LOG_FILE}.*.log
     echo "Old logs have been archived."
+    
+    # 删除已打包的日志文件，保留最新的5个
+    ls -t "$LOG_DIR"/${LOG_FILE}.*.log | tail -n +6 | xargs rm -f
 fi
 
 # 停止 ROS2 节点
