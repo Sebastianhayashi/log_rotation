@@ -35,7 +35,7 @@ read -r delete_logs
 if [[ "$delete_logs" == "y" ]]; then
     echo "Cleaning up old log files..."
     rm -f "$LOG_DIR/$LOG_FILE"
-    rm -f "$LOG_DIR/${LOG_FILE%.*}.*.log"
+    rm -f "$LOG_DIR/${LOG_FILE%.*}_"*.log
     echo "Old log files deleted."
 fi
 
@@ -60,19 +60,25 @@ ROS_PID=$!
 sleep 10
 
 # 监控日志文件大小并轮转
-while : ; do
-    LOG_SIZE=$(stat -c%s "$FULL_LOG_PATH")
-    if [ "$LOG_SIZE" -ge "$MAX_SIZE" ]; then
-        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-        mv "$FULL_LOG_PATH" "$LOG_DIR/${LOG_FILE%.*}_$TIMESTAMP.log"
-        touch "$FULL_LOG_PATH"  # 创建新的日志文件
+while kill -0 $ROS_PID 2>/dev/null; do
+    if [ -f "$FULL_LOG_PATH" ]; then
+        LOG_SIZE=$(stat -c%s "$FULL_LOG_PATH")
+        if [ "$LOG_SIZE" -ge "$MAX_SIZE" ]; then
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            mv "$FULL_LOG_PATH" "$LOG_DIR/${LOG_FILE%.*}_$TIMESTAMP.log"
+            touch "$FULL_LOG_PATH"  # 创建新的日志文件
 
-        # 保留最多 MAX_FILES 个备份日志
-        NUM_LOGS=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log 2>/dev/null | wc -l)
-        if [ "$NUM_LOGS" -gt "$MAX_FILES" ]; then
-            OLDEST_LOG=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log | head -n 1)
-            rm "$OLDEST_LOG"
+            # 保留最多 MAX_FILES 个备份日志
+            NUM_LOGS=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log 2>/dev/null | wc -l)
+            if [ "$NUM_LOGS" -gt "$MAX_FILES" ]; then
+                OLDEST_LOG=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log | head -n 1)
+                rm "$OLDEST_LOG"
+            fi
+            echo "Log rotated: created backup and cleared main log file."
         fi
+    else
+        echo "Log file $FULL_LOG_PATH not found, creating it..."
+        touch "$FULL_LOG_PATH"
     fi
     sleep 5  # 每5秒检查一次文件大小
 done
