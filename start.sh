@@ -14,7 +14,7 @@ LOG_DIR="${input_log_dir:-$HOME/.ros/log}"
 
 read -p "Enter the log file name (default: log_rotation_node.log): " input_log_file
 LOG_FILE="${input_log_file:-log_rotation_node.log}"
-FULL_LOG_PATH="$LOG_DIR/$LOG_FILE"  # 组合完整路径
+FULL_LOG_PATH="$LOG_DIR/$LOG_FILE"
 
 read -p "Enter the max log file size in bytes before rotation (default: 1048576, i.e., 1MB): " input_max_size
 MAX_SIZE="${input_max_size:-1048576}"
@@ -60,13 +60,10 @@ ros2 run "$package_name" "$executable_name" &
 ROS_PID=$!
 
 # 设置 trap 以在脚本终止时终止 ROS2 节点
-trap 'kill $ROS_PID' SIGINT
-
-# 等待日志生成
-sleep 10
+trap 'echo "Terminating..."; kill $ROS_PID; exit' SIGINT SIGTERM
 
 # 监控日志文件大小并轮转
-while : ; do
+while kill -0 $ROS_PID 2>/dev/null; do
     LOG_SIZE=$(stat -c%s "$FULL_LOG_PATH" 2>/dev/null || echo 0)
     echo "Current log file size: $LOG_SIZE bytes"
     if [ "$LOG_SIZE" -ge "$MAX_SIZE" ]; then
@@ -86,6 +83,4 @@ while : ; do
     sleep 5  # 每5秒检查一次文件大小
 done
 
-# 等待节点退出
-wait $ROS_PID
 echo "ROS2 node has stopped."
