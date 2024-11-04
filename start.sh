@@ -22,6 +22,10 @@ MAX_SIZE="${input_max_size:-1048576}"
 read -p "Enter the max number of backup log files to retain (default: 5): " input_max_files
 MAX_FILES="${input_max_files:-5}"
 
+# 用户输入目标 ROS 2 程序
+read -p "Enter the ROS 2 package name: " package_name
+read -p "Enter the ROS 2 executable name: " executable_name
+
 # 创建日志目录（如果不存在）
 mkdir -p "$LOG_DIR"
 
@@ -45,11 +49,11 @@ export LOG_FILE_PATH="$FULL_LOG_PATH"
 export MAX_LOG_SIZE="$MAX_SIZE"
 export MAX_LOG_FILES="$MAX_FILES"
 
-# 启动目标程序并传递日志轮转配置
+# 启动用户指定的目标 ROS 2 程序
 echo "Starting ROS2 node with log rotation settings..."
 
-# 使用 `ros2 run` 运行 demo_nodes_cpp 的 talker 节点
-ros2 run demo_nodes_cpp talker &
+# 使用 `ros2 run` 运行用户指定的节点
+ros2 run "$package_name" "$executable_name" &
 ROS_PID=$!
 
 # 等待日志生成
