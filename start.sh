@@ -28,16 +28,11 @@ read -p "Enter the ROS 2 executable name: " executable_name
 
 # 创建日志目录（如果不存在）
 mkdir -p "$LOG_DIR"
-
-# 清理之前的日志文件
-echo "Do you want to delete existing log files? (y/n)"
-read -r delete_logs
-if [[ "$delete_logs" == "y" ]]; then
-    echo "Cleaning up old log files..."
-    rm -f "$LOG_DIR/$LOG_FILE"
-    rm -f "$LOG_DIR/${LOG_FILE%.*}.*.log"
-    echo "Old log files deleted."
+if [ ! -d "$LOG_DIR" ]; then
+    echo "Error: Failed to create log directory $LOG_DIR."
+    exit 1
 fi
+echo "Log directory created or already exists at: $LOG_DIR"
 
 echo "LOG_DIR is set to: $LOG_DIR"
 echo "LOG_FILE is set to: $LOG_FILE"
@@ -49,47 +44,44 @@ export LOG_FILE_PATH="$FULL_LOG_PATH"
 export MAX_LOG_SIZE="$MAX_SIZE"
 export MAX_LOG_FILES="$MAX_FILES"
 
+# 清理之前的日志文件
+echo "Do you want to delete existing log files? (y/n)"
+read -r delete_logs
+if [[ "$delete_logs" == "y" ]]; then
+    echo "Cleaning up old log files..."
+    rm -f "$LOG_DIR/$LOG_FILE"
+    rm -f "$LOG_DIR/${LOG_FILE%.*}.*.log"
+    echo "Old log files deleted."
+fi
+
 # 启动用户指定的目标 ROS 2 程序
 echo "Starting ROS2 node with log rotation settings..."
-
-# 使用 `ros2 run` 运行用户指定的节点
 ros2 run "$package_name" "$executable_name" &
 ROS_PID=$!
 
-# 检查是否成功启动节点
-if ps -p $ROS_PID > /dev/null; then
-    echo "ROS2 node started successfully with PID $ROS_PID."
-else
-    echo "Failed to start ROS2 node."
-    exit 1
-fi
+# 设置 trap 以在脚本终止时终止 ROS2 节点
+trap 'kill $ROS_PID' SIGINT
 
 # 等待日志生成
 sleep 10
 
 # 监控日志文件大小并轮转
 while : ; do
-    if [ -f "$FULL_LOG_PATH" ]; then
-        LOG_SIZE=$(stat -c%s "$FULL_LOG_PATH")
-        echo "Current log file size: $LOG_SIZE bytes"
-        if [ "$LOG_SIZE" -ge "$MAX_SIZE" ]; then
-            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-            mv "$FULL_LOG_PATH" "$LOG_DIR/${LOG_FILE%.*}_$TIMESTAMP.log"
-            touch "$FULL_LOG_PATH"  # 创建新的日志文件
-            echo "Log rotated. New log file created: $FULL_LOG_PATH"
+    LOG_SIZE=$(stat -c%s "$FULL_LOG_PATH" 2>/dev/null || echo 0)
+    echo "Current log file size: $LOG_SIZE bytes"
+    if [ "$LOG_SIZE" -ge "$MAX_SIZE" ]; then
+        TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+        mv "$FULL_LOG_PATH" "$LOG_DIR/${LOG_FILE%.*}_$TIMESTAMP.log"
+        touch "$FULL_LOG_PATH"  # 创建新的日志文件
+        echo "Log file rotated. New log file created at $FULL_LOG_PATH"
 
-            # 保留最多 MAX_FILES 个备份日志
-            NUM_LOGS=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log 2>/dev/null | wc -l)
-            echo "Number of log files: $NUM_LOGS"
-            if [ "$NUM_LOGS" -gt "$MAX_FILES" ]; then
-                OLDEST_LOG=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log | head -n 1)
-                rm "$OLDEST_LOG"
-                echo "Deleted oldest log file: $OLDEST_LOG"
-            fi
+        # 保留最多 MAX_FILES 个备份日志
+        NUM_LOGS=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log 2>/dev/null | wc -l)
+        if [ "$NUM_LOGS" -gt "$MAX_FILES" ]; then
+            OLDEST_LOG=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log | head -n 1)
+            rm "$OLDEST_LOG"
+            echo "Oldest log file $OLDEST_LOG deleted"
         fi
-    else
-        echo "Log file $FULL_LOG_PATH not found, creating it..."
-        touch "$FULL_LOG_PATH"
     fi
     sleep 5  # 每5秒检查一次文件大小
 done
