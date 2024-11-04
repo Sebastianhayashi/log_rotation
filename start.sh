@@ -35,6 +35,7 @@ fi
 echo "Log directory created or already exists at: $LOG_DIR"
 
 echo "LOG_DIR is set to: $LOG_DIR"
+echo "Log path is $FULL_LOG_PATH"
 echo "LOG_FILE is set to: $LOG_FILE"
 echo "MAX_SIZE is set to: $MAX_SIZE bytes"
 echo "MAX_FILES is set to: $MAX_FILES"
