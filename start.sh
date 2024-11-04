@@ -35,7 +35,7 @@ read -r delete_logs
 if [[ "$delete_logs" == "y" ]]; then
     echo "Cleaning up old log files..."
     rm -f "$LOG_DIR/$LOG_FILE"
-    rm -f "$LOG_DIR/${LOG_FILE%.*}_"*.log
+    rm -f "$LOG_DIR/${LOG_FILE%.*}.*.log"
     echo "Old log files deleted."
 fi
 
@@ -56,25 +56,36 @@ echo "Starting ROS2 node with log rotation settings..."
 ros2 run "$package_name" "$executable_name" &
 ROS_PID=$!
 
+# 检查是否成功启动节点
+if ps -p $ROS_PID > /dev/null; then
+    echo "ROS2 node started successfully with PID $ROS_PID."
+else
+    echo "Failed to start ROS2 node."
+    exit 1
+fi
+
 # 等待日志生成
 sleep 10
 
 # 监控日志文件大小并轮转
-while kill -0 $ROS_PID 2>/dev/null; do
+while : ; do
     if [ -f "$FULL_LOG_PATH" ]; then
         LOG_SIZE=$(stat -c%s "$FULL_LOG_PATH")
+        echo "Current log file size: $LOG_SIZE bytes"
         if [ "$LOG_SIZE" -ge "$MAX_SIZE" ]; then
             TIMESTAMP=$(date +%Y%m%d_%H%M%S)
             mv "$FULL_LOG_PATH" "$LOG_DIR/${LOG_FILE%.*}_$TIMESTAMP.log"
             touch "$FULL_LOG_PATH"  # 创建新的日志文件
+            echo "Log rotated. New log file created: $FULL_LOG_PATH"
 
             # 保留最多 MAX_FILES 个备份日志
             NUM_LOGS=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log 2>/dev/null | wc -l)
+            echo "Number of log files: $NUM_LOGS"
             if [ "$NUM_LOGS" -gt "$MAX_FILES" ]; then
                 OLDEST_LOG=$(ls "$LOG_DIR/${LOG_FILE%.*}_"*.log | head -n 1)
                 rm "$OLDEST_LOG"
+                echo "Deleted oldest log file: $OLDEST_LOG"
             fi
-            echo "Log rotated: created backup and cleared main log file."
         fi
     else
         echo "Log file $FULL_LOG_PATH not found, creating it..."
