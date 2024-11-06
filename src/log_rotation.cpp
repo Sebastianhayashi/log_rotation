@@ -6,8 +6,6 @@
 #include <string>
 #include <chrono>
 #include <thread>
-#include <filesystem>
-#include <iostream>
 
 class LogTestNode : public rclcpp::Node
 {
@@ -25,25 +23,10 @@ public:
         const char* max_files_env = std::getenv("MAX_LOG_FILES");
         int max_files = max_files_env ? std::stoi(max_files_env) : 5;  // 默认保留 5 个文件
 
-        // 检查日志目录是否存在以及是否有写权限
-        std::filesystem::path log_dir = std::filesystem::path(log_file_path).parent_path();
-        if (!std::filesystem::exists(log_dir)) {
-            std::cerr << "Error: Log directory " << log_dir << " does not exist. Attempting to create it..." << std::endl;
-            try {
-                std::filesystem::create_directories(log_dir);
-                std::cout << "Log directory created at: " << log_dir << std::endl;
-            } catch (const std::filesystem::filesystem_error& e) {
-                std::cerr << "Error: Unable to create log directory. " << e.what() << std::endl;
-                rclcpp::shutdown();
-                exit(1);
-            }
-        }
-
-        if (!std::filesystem::permissions(log_dir) & std::filesystem::perms::owner_write) {
-            std::cerr << "Error: No write permission for log directory " << log_dir << std::endl;
-            rclcpp::shutdown();
-            exit(1);
-        }
+        // 输出读取到的环境变量值
+        RCLCPP_INFO(this->get_logger(), "Log File Path: %s", log_file_path.c_str());
+        RCLCPP_INFO(this->get_logger(), "Max Log Size: %d", max_size);
+        RCLCPP_INFO(this->get_logger(), "Max Log Files: %d", max_files);
 
         // 创建基于大小的日志轮转器
         auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
