@@ -27,13 +27,37 @@ read -p "Enter the ROS 2 package name: " package_name
 read -p "Enter the ROS 2 executable name (log_rotation_node by default): " executable_name
 executable_name="${executable_name:-log_rotation_node}"
 
-# 创建日志目录（如果不存在）
+# 检查并创建日志目录（如果不存在）
 mkdir -p "$LOG_DIR"
+if [ ! -d "$LOG_DIR" ]; then
+    echo "Error: Failed to create log directory $LOG_DIR."
+    exit 1
+fi
+echo "Log directory created or already exists at: $LOG_DIR"
+
+# 检查日志文件路径的变量设置
+echo "Checking log path settings..."
+echo "Log Directory: $LOG_DIR"
+echo "Log File Path: $FULL_LOG_PATH"
+echo "Max Log Size: $MAX_SIZE bytes"
+echo "Max Log Files: $MAX_FILES"
 
 # 配置日志轮转环境变量
 export LOG_FILE_PATH="$FULL_LOG_PATH"
 export MAX_LOG_SIZE="$MAX_SIZE"
 export MAX_LOG_FILES="$MAX_FILES"
+
+# 确保日志目录具有写权限
+echo "Checking directory permissions for $LOG_DIR..."
+if [ ! -w "$LOG_DIR" ]; then
+    echo "Error: No write permission for log directory $LOG_DIR. Attempting to set permissions..."
+    chmod -R 755 "$LOG_DIR"
+    if [ ! -w "$LOG_DIR" ]; then
+        echo "Error: Unable to set write permissions for $LOG_DIR."
+        exit 1
+    fi
+fi
+echo "Permissions are correctly set for $LOG_DIR."
 
 # 清理旧日志文件
 echo "Do you want to delete existing log files? (y/n)"
