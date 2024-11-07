@@ -8,9 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 查找依赖
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(spdlog REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(spdlog REQUIRED)  # 保持对 spdlog 的查找
 
 # 添加 include 目录
 include_directories(
@@ -28,10 +28,12 @@ add_executable(log_rotation_node
 # 链接依赖库
 ament_target_dependencies(log_rotation_node
   rclcpp
-  spdlog
   yaml-cpp
   ament_index_cpp
 )
+
+# 手动链接 spdlog
+target_link_libraries(log_rotation_node spdlog::spdlog)
 
 # 安装可执行文件
 install(TARGETS log_rotation_node
