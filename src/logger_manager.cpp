@@ -1,7 +1,9 @@
-#include "logger_manager.hpp"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <filesystem>
+#include "ros2_log_rotation/logger_manager.hpp"
+#include "ros2_log_rotation/config.hpp"
+
 
 LoggerManager::LoggerManager(const rclcpp::Node::SharedPtr &node, const Config &config)
     : node_(node), config_(config)
@@ -10,6 +12,16 @@ LoggerManager::LoggerManager(const rclcpp::Node::SharedPtr &node, const Config &
 
 void LoggerManager::initialize()
 {
+    // 如果配置尚未加载，尝试加载配置文件
+    if (!config_loaded_)
+    {
+        if (!config_.loadFromFile("/path/to/config.yaml"))  // 替换为实际配置文件路径
+        {
+            config_.loadDefaults();  // 如果加载失败，则使用默认配置
+        }
+        config_loaded_ = true;  // 设置为已加载
+    }
+
     // 读取用户配置或使用默认值
     std::string log_file_path = config_.log_file_path.empty() ? "/tmp/ros2_logs/log_rotation.log" : config_.log_file_path;
     size_t max_file_size = config_.max_file_size > 0 ? config_.max_file_size : 1048576;  // 默认最大文件大小 1MB

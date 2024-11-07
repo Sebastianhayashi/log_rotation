@@ -1,24 +1,34 @@
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#include "config.hpp"
+#include <fstream>
+#include <yaml-cpp/yaml.h>  // 确保您已安装并链接 yaml-cpp 库
 
-#include <string>
-
-class Config
+Config::Config()
 {
-public:
-    // 默认构造函数
-    Config();
+    // 初始化默认值
+    loadDefaults();
+}
 
-    // 配置参数
-    std::string log_file_path;     // 日志文件路径
-    size_t max_file_size;          // 最大日志文件大小（字节）
-    size_t max_files;              // 最大保留日志文件数量
+void Config::loadDefaults()
+{
+    log_file_path = "/tmp/ros2_logs/log_rotation.log";
+    max_file_size = 1048576;  // 1MB
+    max_files = 5;
+}
 
-    // 加载默认配置
-    void loadDefaults();
-
-    // 从文件或其他来源加载配置
-    bool loadFromFile(const std::string &file_path);
-};
-
-#endif // CONFIG_HPP
+bool Config::loadFromFile(const std::string &file_path)
+{
+    try
+    {
+        YAML::Node config = YAML::LoadFile(file_path);
+        log_file_path = config["log_file_path"].as<std::string>();
+        max_file_size = config["max_size"].as<size_t>();
+        max_files = config["max_files"].as<size_t>();
+        return true;
+    }
+    catch (const std::exception &e)
+    {
+        // 处理错误，例如文件不存在或格式错误
+        std::cerr << "Failed to load config file: " << e.what() << std::endl;
+        return false;
+    }
+}

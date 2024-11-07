@@ -1,5 +1,7 @@
 #ifndef COMPRESSION_UTIL_HPP
 #define COMPRESSION_UTIL_HPP
+#include "ros2_log_rotation/compression_util.hpp"
+
 
 #include <string>
 

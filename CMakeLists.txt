@@ -8,19 +8,32 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 查找依赖
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(spdlog REQUIRED)
 find_package(rcl_logging_spdlog REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(fmt REQUIRED)  # 显式查找 fmt 库
+find_package(yaml-cpp REQUIRED)  # 添加 yaml-cpp 库
 
-# 添加可执行文件
-add_executable(log_rotation_node src/main.cpp src/logger_manager.cpp)
+# 添加 include 目录
+include_directories(
+  include
+)
+
+# 添加可执行文件，包含所有源文件
+add_executable(log_rotation_node
+  src/main.cpp
+  src/logger_manager.cpp
+  src/compression_util.cpp
+  src/config.cpp
+)
 
 # 链接依赖库
 ament_target_dependencies(log_rotation_node
   rclcpp
   rcl_logging_spdlog
   rcutils
-  fmt  # 添加 fmt 库依赖
+  fmt
+  yaml-cpp  # 添加 yaml-cpp 库依赖
 )
 
 # 手动链接 pthread 库（仅在 Linux 平台）
