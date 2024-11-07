@@ -13,7 +13,7 @@ find_package(rcutils REQUIRED)
 find_package(fmt REQUIRED)  # 显式查找 fmt 库
 
 # 添加可执行文件
-add_executable(log_rotation_node src/main.cpp)
+add_executable(log_rotation_node src/main.cpp src/logger_manager.cpp)
 
 # 链接依赖库
 ament_target_dependencies(log_rotation_node
