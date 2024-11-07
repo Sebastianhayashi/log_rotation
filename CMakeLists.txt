@@ -13,10 +13,10 @@ find_package(rcutils REQUIRED)
 find_package(fmt REQUIRED)  # 显式查找 fmt 库
 
 # 添加可执行文件
-add_executable(log_test_node src/log_test_node.cpp)
+add_executable(log_rotation_node src/main.cpp)
 
 # 链接依赖库
-ament_target_dependencies(log_test_node
+ament_target_dependencies(log_rotation_node
   rclcpp
   rcl_logging_spdlog
   rcutils
@@ -25,17 +25,17 @@ ament_target_dependencies(log_test_node
 
 # 手动链接 pthread 库（仅在 Linux 平台）
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-  target_link_libraries(log_test_node pthread)
+  target_link_libraries(log_rotation_node pthread)
 endif()
 
 # 添加 fmt 库
-target_link_libraries(log_test_node fmt)
+target_link_libraries(log_rotation_node fmt)
 
 # 添加链接器标志以解决 DSO 错误
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--copy-dt-needed-entries")
 
 # 安装可执行文件
-install(TARGETS log_test_node
+install(TARGETS log_rotation_node
   DESTINATION lib/${PROJECT_NAME})
 
 # 安装配置文件
