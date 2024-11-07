@@ -1,28 +1,32 @@
 #include <gtest/gtest.h>
-#include "logger_manager.hpp"
+#include "ros2_log_rotation/logger_manager.hpp"
+#include "ros2_log_rotation/config.hpp"
 #include <rclcpp/rclcpp.hpp>
 
-TEST(LoggerManagerTest, InitializationTest)
+TEST(LoggerManagerTest, Initialization)
 {
-    auto node = std::make_shared<rclcpp::Node>("test_node");
+    auto node = rclcpp::Node::make_shared("test_node");
     Config config;
-    config.log_file_path = "/tmp/test_log.log";
-    config.max_file_size = 1024; // 1KB
-    config.max_files = 3;
-
+    config.loadDefaults();
     LoggerManager logger_manager(node, config);
     EXPECT_NO_THROW(logger_manager.initialize());
 }
 
-TEST(LoggerManagerTest, LogInfoTest)
+TEST(LoggerManagerTest, LogInfo)
 {
-    auto node = std::make_shared<rclcpp::Node>("test_node");
+    auto node = rclcpp::Node::make_shared("test_node");
     Config config;
-    config.log_file_path = "/tmp/test_log.log";
-    config.max_file_size = 1024; // 1KB
-    config.max_files = 3;
-
+    config.loadDefaults();
     LoggerManager logger_manager(node, config);
     logger_manager.initialize();
-    EXPECT_NO_THROW(logger_manager.logInfo("This is an info message."));
+    EXPECT_NO_THROW(logger_manager.logInfo("Test info message"));
+}
+
+int main(int argc, char **argv)
+{
+    testing::InitGoogleTest(&argc, argv);
+    rclcpp::init(argc, argv);
+    auto result = RUN_ALL_TESTS();
+    rclcpp::shutdown();
+    return result;
 }

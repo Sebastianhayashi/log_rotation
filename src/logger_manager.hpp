@@ -5,12 +5,13 @@
 #include <memory>
 #include <string>
 #include <spdlog/logger.h>
-#include "config.hpp"  // 包含配置头文件
+#include "ros2_log_rotation/config.hpp"
+#include "ros2_log_rotation/compression_util.hpp"
 
 class LoggerManager
 {
 public:
-    // 构造函数，接收节点指针和配置对象
+    // 构造函数
     LoggerManager(const rclcpp::Node::SharedPtr &node, const Config &config);
 
     // 初始化日志管理器
@@ -23,9 +24,9 @@ public:
 
 private:
     rclcpp::Node::SharedPtr node_;  // ROS2 节点指针
-    Config config_;  // 配置对象
     std::shared_ptr<spdlog::logger> rotating_logger_;  // spdlog 轮转日志记录器
-    bool config_loaded_ = false;  // 标记配置是否已加载
+    Config config_;  // 配置对象
+    std::shared_ptr<CompressionUtil> compression_util_;  // 压缩工具
 };
 
 #endif // LOGGER_MANAGER_HPP

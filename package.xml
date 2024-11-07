@@ -1,26 +1,14 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>ros2_log_rotation</name>
   <version>0.2.0</version>
-   <description>ROS2 logging project with support for rcl_logging_spdlog and log rotation based on file size and time limits.</description>
-
-  <!-- 维护者信息 -->
-  <maintainer email="microseyuyu@gmail.com">Sebastianhayashi</maintainer>
-  
-  <!-- 许可证 -->
-  <license>Apache-2.0</license>
-
-  <!-- 构建工具依赖 -->
+  <description>ROS2 Log Rotation Package</description>
+  <maintainer email=microseyuyu@outlook.jp>Sebastianhayashi</maintainer>
+  <license>MIT</license>
   <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <!-- 运行时依赖 -->
   <depend>rclcpp</depend>
-  <depend>rcl_logging_spdlog</depend>
-  <depend>rcutils</depend>
-  <depend>fmt</depend>
-
-  <!-- 导出设置 -->
-  <export>
-    <build_type>ament_cmake</build_type>
-  </export>
+  <depend>spdlog_vendor</depend>
+  <depend>yaml_cpp_vendor</depend>
+  <exec_depend>launch</exec_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
 </package>

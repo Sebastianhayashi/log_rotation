@@ -41,7 +41,7 @@ class LogRotationGUI:
             }
 
             # 保存配置到 YAML 文件
-            with open("log_config.yaml", "w") as config_file:
+            with open("config/log_config.yaml", "w") as config_file:
                 yaml.dump(config, config_file)
 
             messagebox.showinfo("Success", "Configuration saved successfully!")

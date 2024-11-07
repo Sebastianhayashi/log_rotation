@@ -1,9 +1,7 @@
-#include <spdlog/spdlog.h>
+#include "ros2_log_rotation/logger_manager.hpp"
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <filesystem>
-#include "ros2_log_rotation/logger_manager.hpp"
-#include "ros2_log_rotation/config.hpp"
-
+#include "ros2_log_rotation/compression_util.hpp"
 
 LoggerManager::LoggerManager(const rclcpp::Node::SharedPtr &node, const Config &config)
     : node_(node), config_(config)
@@ -12,27 +10,20 @@ LoggerManager::LoggerManager(const rclcpp::Node::SharedPtr &node, const Config &
 
 void LoggerManager::initialize()
 {
-    // 如果配置尚未加载，尝试加载配置文件
-    if (!config_loaded_)
-    {
-        if (!config_.loadFromFile("/path/to/config.yaml"))  // 替换为实际配置文件路径
-        {
-            config_.loadDefaults();  // 如果加载失败，则使用默认配置
-        }
-        config_loaded_ = true;  // 设置为已加载
-    }
-
-    // 读取用户配置或使用默认值
-    std::string log_file_path = config_.log_file_path.empty() ? "/tmp/ros2_logs/log_rotation.log" : config_.log_file_path;
-    size_t max_file_size = config_.max_file_size > 0 ? config_.max_file_size : 1048576;  // 默认最大文件大小 1MB
-    size_t max_files = config_.max_files > 0 ? config_.max_files : 5;  // 默认最多保留 5 个日志文件
-
     // 创建日志目录
-    std::filesystem::create_directories(std::filesystem::path(log_file_path).parent_path());
+    std::filesystem::create_directories(std::filesystem::path(config_.log_file_path).parent_path());
 
     // 创建日志轮转器
-    rotating_logger_ = spdlog::rotating_logger_mt("log_rotation", log_file_path, max_file_size, max_files);
+    rotating_logger_ = spdlog::rotating_logger_mt("log_rotation", config_.log_file_path, config_.max_file_size, config_.max_files);
     rotating_logger_->set_level(spdlog::level::info);  // 设置日志级别为 info
+
+    // 日志轮转后进行压缩
+    rotating_logger_->flush_on(spdlog::level::info);
+    rotating_logger_->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
+
+    // 初始化压缩工具
+    compression_util_ = std::make_shared<CompressionUtil>();
+
     rotating_logger_->info("Logger initialized for log rotation.");
 }
 

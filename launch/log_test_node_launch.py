@@ -2,28 +2,29 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+import os
 
 def generate_launch_description():
-    # 定义参数并设置默认值
+    # 定义启动参数
     log_file_path_arg = DeclareLaunchArgument(
         'log_file_path',
-        default_value='/tmp/ros2_logs/log_rotation.log',
-        description='Path to the log file'
+        default_value=os.path.expanduser('~/ros2_logs/log_rotation.log'),
+        description='Path to the log file for the node'
     )
 
     max_size_arg = DeclareLaunchArgument(
         'max_size',
-        default_value='1048576',  # 1MB
-        description='Maximum size of log file in bytes'
+        default_value='1048576',  # 默认 1MB
+        description='Maximum log file size before rotation in bytes'
     )
 
     max_files_arg = DeclareLaunchArgument(
         'max_files',
         default_value='5',
-        description='Maximum number of log files to retain'
+        description='Maximum number of backup log files'
     )
 
-    # 启动节点并传递参数
+    # 创建并返回 LaunchDescription
     return LaunchDescription([
         log_file_path_arg,
         max_size_arg,
@@ -36,7 +37,7 @@ def generate_launch_description():
             parameters=[{
                 'log_file_path': LaunchConfiguration('log_file_path'),
                 'max_size': LaunchConfiguration('max_size'),
-                'max_files': LaunchConfiguration('max_files'),
-            }]
+                'max_files': LaunchConfiguration('max_files')
+            }],
         )
     ])
