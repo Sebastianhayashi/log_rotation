@@ -10,7 +10,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(spdlog REQUIRED)  # 这只是查找，不需要放在 ament_target_dependencies 中
 
 # 添加 include 目录
 include_directories(
