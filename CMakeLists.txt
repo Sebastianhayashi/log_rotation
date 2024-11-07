@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(log_rotation)
+project(ros2_log_rotation)
 
 # 设置 C++ 标准
 set(CMAKE_CXX_STANDARD 17)
