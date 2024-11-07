@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>log_rotation</name>
-  <version>0.1.0</version>
-  <description>ROS2 logging project with support for rcl_logging_spdlog and log rotation based on file size and time limits.</description>
-  
+  <name>ros2_log_rotation</name>
+  <version>0.2.0</version>
+   <description>ROS2 logging project with support for rcl_logging_spdlog and log rotation based on file size and time limits.</description>
+
   <!-- 维护者信息 -->
   <maintainer email="microseyuyu@gmail.com">Sebastianhayashi</maintainer>
   
@@ -17,7 +17,7 @@
   <depend>rclcpp</depend>
   <depend>rcl_logging_spdlog</depend>
   <depend>rcutils</depend>
-  <depend>fmt</depend>  <!-- 显式添加 fmt 库依赖 -->
+  <depend>fmt</depend>
 
   <!-- 导出设置 -->
   <export>
